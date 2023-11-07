@@ -4,8 +4,8 @@ metadata:
   name: scheduler-svc
 spec:
   ports:
-  - port: 8000
-    targetPort: http
+    - port: 8000
+      targetPort: http
   selector:
     app: openkat-scheduler
   type: ClusterIP

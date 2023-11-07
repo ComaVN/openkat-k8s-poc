@@ -4,7 +4,7 @@ metadata:
   name: rabbitmq
 spec:
   replicas: 1
-  serviceName: rabbitmq
+  serviceName: openkat-rabbitmq
   selector:
     matchLabels:
       app: rabbitmq
