@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: openkat-octopoes-api
+  name: octopoes-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openkat-octopoes-api
+  template:
+    metadata:
+      labels:
+        app: openkat-octopoes-api
+    spec:
+      containers:
+        - name: openkat-octopoes-api
+          image: nl-kat-octopoes
+          env:
+            - name: KATALOGUS_API
+              value: http://openkat-katalogus-svc:8000
+            - name: RABBITMQ_DEFAULT_USER
+              value: guest
+            - name: RABBITMQ_DEFAULT_PASS
+              value: guest
+            - name: QUEUE_URI
+              value: amqp://$(RABBITMQ_DEFAULT_USER):$(RABBITMQ_DEFAULT_PASS)@openkat-rabbitmq-svc:5672/
+            - name: XTDB_URI
+              value: http://openkat-xtdb-svc:3000
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

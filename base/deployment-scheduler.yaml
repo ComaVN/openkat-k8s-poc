@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: openkat-scheduler
+  name: scheduler
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openkat-scheduler
+  template:
+    metadata:
+      labels:
+        app: openkat-scheduler
+    spec:
+      initContainers:
+        - name: openkat-scheduler-init
+          image: postgresql
+          command:
+            - psql
+            - --host=$(SCHEDULER_DB_HOST)
+            - --command=CREATE DATABASE $(SCHEDULER_DB)
+            - --command=CREATE USER $(SCHEDULER_DB_USER) WITH PASSWORD '$(SCHEDULER_DB_PASSWORD)'
+            - --command=ALTER DATABASE $(SCHEDULER_DB) OWNER TO $(SCHEDULER_DB_USER)
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-db-superuser
+                  key: password
+            - name: SCHEDULER_DB_HOST
+              value: openkat-db-rw
+            - name: SCHEDULER_DB
+              value: scheduler
+            - name: SCHEDULER_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-scheduler
+                  key: SCHEDULER_DB_USER
+            - name: SCHEDULER_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-scheduler
+                  key: SCHEDULER_DB_PASSWORD
+      containers:
+        - name: openkat-scheduler
+          image: nl-kat-mula
+          env:
+            - name: BYTES_API
+              value: http://openkat-bytes-svc:8000
+            - name: BYTES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_PASSWORD
+            - name: BYTES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_USERNAME
+            - name: KATALOGUS_API
+              value: http://openkat-katalogus-svc:8000
+            - name: OCTOPOES_API
+              value: http://openkat-octopoes-api-svc:8000
+            - name: RABBITMQ_DEFAULT_USER
+              value: guest
+            - name: RABBITMQ_DEFAULT_PASS
+              value: guest
+            - name: QUEUE_URI
+              value: amqp://$(RABBITMQ_DEFAULT_USER):$(RABBITMQ_DEFAULT_PASS)@openkat-rabbitmq-svc:5672/
+            - name: SCHEDULER_API
+              value: http://openkat-scheduler-svc:8000
+            - name: SCHEDULER_DB_HOST
+              value: openkat-db-rw
+            - name: SCHEDULER_DB
+              value: scheduler
+            - name: SCHEDULER_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-scheduler
+                  key: SCHEDULER_DB_USER
+            - name: SCHEDULER_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-scheduler
+                  key: SCHEDULER_DB_PASSWORD
+            - name: SCHEDULER_DB_URI
+              value: postgresql://$(SCHEDULER_DB_USER):$(SCHEDULER_DB_PASSWORD)@$(SCHEDULER_DB_HOST):5432/$(SCHEDULER_DB)
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

@@ -1,0 +1,28 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: openkat-k8s-poc
+resources:
+  - ../../base
+  - secret-bytes.yaml
+  - secret-katalogus.yaml
+  - secret-rocky.yaml
+  - secret-scheduler.yaml
+images:
+  - name: nl-kat-boefjes
+    newName: ghcr.io/minvws/nl-kat-boefjes
+    newTag: v1.12.1
+  - name: nl-kat-bytes
+    newName: ghcr.io/minvws/nl-kat-bytes
+    newTag: v1.12.1
+  - name: nl-kat-mula
+    newName: ghcr.io/minvws/nl-kat-mula
+    newTag: v1.12.1
+  - name: nl-kat-octopoes
+    newName: ghcr.io/minvws/nl-kat-octopoes
+    newTag: v1.12.1
+  - name: nl-kat-rocky
+    newName: ghcr.io/minvws/nl-kat-rocky
+    newTag: v1.12.1
+  - name: postgresql # TODO: Keep this in sync with whatever image the cnpg operator uses for its pods
+    newName: ghcr.io/cloudnative-pg/postgresql
+    newTag: "15.2"

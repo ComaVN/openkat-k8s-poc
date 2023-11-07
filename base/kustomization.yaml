@@ -1,0 +1,27 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namePrefix: openkat-
+commonLabels:
+  digilab/type: tenant
+  digilab/tenant: digilab-ops
+  digilab/app: openkat
+  digilab/app-slug: digilab-ops-openkat
+resources:
+  - deployment-boefje.yaml
+  - deployment-bytes.yaml
+  - deployment-katalogus.yaml
+  - deployment-normalizer.yaml
+  - deployment-octopoes-api.yaml
+  - deployment-octopoes-api-worker.yaml
+  - deployment-rocky.yaml
+  - deployment-scheduler.yaml
+  - postgresql.yaml
+  - service-bytes.yaml
+  - service-katalogus.yaml
+  - service-octopoes-api.yaml
+  - service-rabbitmq.yaml
+  - service-rocky.yaml
+  - service-scheduler.yaml
+  - service-xtdb.yaml
+  - statefulset-rabbitmq.yaml
+  - statefulset-xtdb.yaml

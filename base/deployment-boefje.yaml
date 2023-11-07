@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: openkat-boefje
+  name: boefje
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openkat-boefje
+  template:
+    metadata:
+      labels:
+        app: openkat-boefje
+    spec:
+      containers:
+        - name: openkat-boefje
+          image: nl-kat-boefjes
+          args:
+            - boefje
+          env:
+            - name: BYTES_API
+              value: http://openkat-bytes-svc:8000
+            - name: BYTES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_PASSWORD
+            - name: BYTES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_USERNAME
+            - name: KATALOGUS_API
+              value: http://openkat-katalogus-svc:8000
+            - name: KATALOGUS_DB_HOST
+              value: openkat-db-rw
+            - name: KATALOGUS_DB
+              value: katalogus
+            - name: KATALOGUS_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-katalogus
+                  key: KATALOGUS_DB_USER
+            - name: KATALOGUS_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-katalogus
+                  key: KATALOGUS_DB_PASSWORD
+            - name: KATALOGUS_DB_URI
+              value: postgresql://$(KATALOGUS_DB_USER):$(KATALOGUS_DB_PASSWORD)@$(KATALOGUS_DB_HOST):5432/$(KATALOGUS_DB)
+            - name: OCTOPOES_API
+              value: http://openkat-octopoes-api-svc:8000
+            - name: RABBITMQ_DEFAULT_USER
+              value: guest
+            - name: RABBITMQ_DEFAULT_PASS
+              value: guest
+            - name: QUEUE_URI
+              value: amqp://$(RABBITMQ_DEFAULT_USER):$(RABBITMQ_DEFAULT_PASS)@openkat-rabbitmq-svc:5672/
+            - name: SCHEDULER_API
+              value: http://openkat-scheduler-svc:8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

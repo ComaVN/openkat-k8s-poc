@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: openkat-xtdb-svc
+spec:
+  ports:
+    - port: 3000
+      targetPort: xtdb
+  selector:
+    app: openkat-xtdb
+  type: ClusterIP

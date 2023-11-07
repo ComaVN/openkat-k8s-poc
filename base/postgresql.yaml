@@ -1,0 +1,13 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: db
+spec:
+  instances: 1
+  enableSuperuserAccess: true
+  storage:
+    size: 10Gi
+  bootstrap:
+    initdb:
+      database: rocky
+      owner: rocky_app

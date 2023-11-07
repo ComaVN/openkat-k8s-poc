@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: openkat-bytes
+  name: bytes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openkat-bytes
+  template:
+    metadata:
+      labels:
+        app: openkat-bytes
+    spec:
+      initContainers:
+        - name: openkat-bytes-init
+          image: postgresql
+          command:
+            - psql
+            - --host=$(BYTES_DB_HOST)
+            - --command=CREATE DATABASE $(BYTES_DB)
+            - --command=CREATE USER $(BYTES_DB_USER) WITH PASSWORD '$(BYTES_DB_PASSWORD)'
+            - --command=ALTER DATABASE $(BYTES_DB) OWNER TO $(BYTES_DB_USER)
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-db-superuser
+                  key: password
+            - name: BYTES_DB_HOST
+              value: openkat-db-rw
+            - name: BYTES_DB
+              value: bytes
+            - name: BYTES_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_DB_USER
+            - name: BYTES_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_DB_PASSWORD
+      containers:
+        - name: openkat-bytes
+          image: nl-kat-bytes
+          env:
+            - name: BYTES_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_SECRET
+            - name: BYTES_DB_HOST
+              value: openkat-db-rw
+            - name: BYTES_DB
+              value: bytes
+            - name: BYTES_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_DB_USER
+            - name: BYTES_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_DB_PASSWORD
+            - name: BYTES_DB_URI
+              value: postgresql://$(BYTES_DB_USER):$(BYTES_DB_PASSWORD)@$(BYTES_DB_HOST):5432/$(BYTES_DB)
+            - name: BYTES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_PASSWORD
+            - name: BYTES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_USERNAME
+            - name: RABBITMQ_DEFAULT_USER
+              value: guest
+            - name: RABBITMQ_DEFAULT_PASS
+              value: guest
+            - name: QUEUE_URI
+              value: amqp://$(RABBITMQ_DEFAULT_USER):$(RABBITMQ_DEFAULT_PASS)@openkat-rabbitmq-svc:5672/
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

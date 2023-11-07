@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: openkat-xtdb
+  name: xtdb
+spec:
+  serviceName: "openkat-xtdb"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openkat-xtdb
+  template:
+    metadata:
+      labels:
+        app: openkat-xtdb
+    spec:
+      containers:
+        - image: ghcr.io/dekkers/xtdb-http-multinode:v1.0.8
+          name: openkat-xtdb
+          ports:
+            - name: xtdb
+              containerPort: 3000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - mountPath: /var/lib/xtdb
+              name: xtdb-data
+  volumeClaimTemplates:
+    - metadata:
+        name: xtdb-data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 100Mi

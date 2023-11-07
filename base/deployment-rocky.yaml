@@ -1,0 +1,98 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: openkat-rocky
+  name: rocky
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openkat-rocky
+  template:
+    metadata:
+      labels:
+        app: openkat-rocky
+    spec:
+      initContainers:
+        - name: openkat-rocky-init
+          image: nl-kat-rocky
+          command:
+            - make
+            - build-rocky-native
+          env:
+            - name: DATABASE_MIGRATION
+              value: "true"
+            - name: DJANGO_SUPERUSER_EMAIL
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-rocky
+                  key: DJANGO_SUPERUSER_EMAIL
+            - name: DJANGO_SUPERUSER_FULL_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-rocky
+                  key: DJANGO_SUPERUSER_FULL_NAME
+            - name: DJANGO_SUPERUSER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-rocky
+                  key: DJANGO_SUPERUSER_PASSWORD
+            # copied from openkat-rocky container below from here...
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-rocky
+                  key: SECRET_KEY
+            - name: ROCKY_DB
+              value: rocky
+            - name: ROCKY_DB_HOST
+              value: openkat-db-rw
+            - name: ROCKY_DB_PORT
+              value: "5432"
+            - name: ROCKY_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-db-app
+                  key: username
+            - name: ROCKY_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-db-app
+                  key: password
+            # ...copied from openkat-rocky container below to here
+      containers:
+        - name: openkat-rocky
+          image: nl-kat-rocky
+          env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-rocky
+                  key: SECRET_KEY
+            - name: ROCKY_DB
+              value: rocky
+            - name: ROCKY_DB_HOST
+              value: openkat-db-rw
+            - name: ROCKY_DB_PORT
+              value: "5432"
+            - name: ROCKY_DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-db-app
+                  key: username
+            - name: ROCKY_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-db-app
+                  key: password
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
