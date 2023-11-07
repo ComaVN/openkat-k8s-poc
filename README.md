@@ -26,4 +26,4 @@ Open a port forward the the main Rocky GUI service:
 kubectl port-forward svc/openkat-rocky-svc 8000
 ```
 
-Rocky is now available at <http://localhost:8000/>
+Rocky is now available at <http://localhost:8000/>. Log in as `superuser@localhost`. The password is in [the `openkat-rocky` secret](overlays/local/secret-rocky.yaml).
