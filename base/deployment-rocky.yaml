@@ -65,6 +65,8 @@ spec:
         - name: openkat-rocky
           image: nl-kat-rocky
           env:
+            - name: DEBUG
+              value: "True"
             - name: SECRET_KEY
               valueFrom:
                 secretKeyRef:
