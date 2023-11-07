@@ -70,6 +70,22 @@ spec:
                 secretKeyRef:
                   name: openkat-rocky
                   key: SECRET_KEY
+            - name: BYTES_API
+              value: http://openkat-bytes-svc:8000
+            - name: BYTES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_PASSWORD
+            - name: BYTES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: openkat-bytes
+                  key: BYTES_USERNAME
+            - name: KATALOGUS_API
+              value: http://openkat-katalogus-svc:8000
+            - name: OCTOPOES_API
+              value: http://openkat-octopoes-api-svc:8000
             - name: ROCKY_DB
               value: rocky
             - name: ROCKY_DB_HOST
@@ -86,6 +102,8 @@ spec:
                 secretKeyRef:
                   name: openkat-db-app
                   key: password
+            - name: SCHEDULER_API
+              value: http://openkat-scheduler-svc:8000
           ports:
             - name: http
               containerPort: 8000
