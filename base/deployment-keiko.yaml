@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: openkat-keiko
+  name: keiko
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openkat-keiko
+  template:
+    metadata:
+      labels:
+        app: openkat-keiko
+    spec:
+      containers:
+        - name: openkat-keiko
+          image: nl-kat-keiko
+          env: []
+          ports:
+            - name: http
+              containerPort: 8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi

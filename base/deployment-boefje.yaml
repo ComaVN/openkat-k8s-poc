@@ -20,6 +20,8 @@ spec:
           args:
             - boefje
           env:
+            - name: BOEFJE_API
+              value: http://openkat-boefje-svc:8000
             - name: BYTES_API
               value: http://openkat-bytes-svc:8000
             - name: BYTES_PASSWORD
@@ -60,6 +62,9 @@ spec:
               value: amqp://$(RABBITMQ_DEFAULT_USER):$(RABBITMQ_DEFAULT_PASS)@openkat-rabbitmq-svc:5672/
             - name: SCHEDULER_API
               value: http://openkat-scheduler-svc:8000
+          ports:
+            - name: http
+              containerPort: 8000
           resources:
             requests:
               cpu: 100m

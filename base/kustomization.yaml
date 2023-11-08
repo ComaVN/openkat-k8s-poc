@@ -10,14 +10,17 @@ resources:
   - deployment-boefje.yaml
   - deployment-bytes.yaml
   - deployment-katalogus.yaml
+  - deployment-keiko.yaml
   - deployment-normalizer.yaml
   - deployment-octopoes-api.yaml
   - deployment-octopoes-api-worker.yaml
   - deployment-rocky.yaml
   - deployment-scheduler.yaml
   - postgresql.yaml
+  - service-boefje.yaml
   - service-bytes.yaml
   - service-katalogus.yaml
+  - service-keiko.yaml
   - service-octopoes-api.yaml
   - service-rabbitmq.yaml
   - service-rocky.yaml

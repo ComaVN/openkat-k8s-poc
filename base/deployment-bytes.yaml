@@ -47,6 +47,8 @@ spec:
         - name: openkat-bytes
           image: nl-kat-bytes
           env:
+            - name: DATABASE_MIGRATION
+              value: "true"
             - name: BYTES_SECRET
               valueFrom:
                 secretKeyRef:

@@ -51,6 +51,8 @@ spec:
           env:
             - name: DATABASE_MIGRATION
               value: "true"
+            - name: BOEFJE_API
+              value: http://openkat-boefje-svc:8000
             - name: BYTES_API
               value: http://openkat-bytes-svc:8000
             - name: BYTES_PASSWORD
